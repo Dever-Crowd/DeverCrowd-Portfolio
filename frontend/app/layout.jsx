@@ -11,20 +11,41 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ),
   title: {
     default: "DeverCrowd",
     template: "%s · DeverCrowd",
   },
   description:
     "DeverCrowd builds high-performing websites and mobile apps that solve real problems and grow your business.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "DeverCrowd",
+    title: "DeverCrowd — Digital products & web development",
+    description:
+      "Websites, mobile apps, and engineering support — built for performance and growth.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DeverCrowd",
+    description: "Digital products studio — web, mobile, and growth.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${jetbrainsMono.variable} min-h-screen bg-background font-code text-foreground antialiased`}
-      >
+      <head>
+        <meta name="color-scheme" content="light dark" />
+      </head>
+      <body className={`${jetbrainsMono.variable} min-h-screen font-code text-foreground antialiased pt-16`}>
         <Providers>
           <MarketingShell>{children}</MarketingShell>
         </Providers>

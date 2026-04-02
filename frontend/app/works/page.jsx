@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { BsArrowUpRight, BsGithub } from "react-icons/bs";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigation, Pagination, Autoplay, EffectCube } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -12,11 +12,52 @@ import "swiper/css/pagination";
 import "swiper/css/effect-cube";
 
 import Image from "next/image";
-import projects from "@/data/dynamic/projects";
+import fallbackProjects from "@/data/dynamic/projects";
+import { get } from "@/data/api";
+import { mediaUrl } from "@/lib/mediaUrl";
 import H1 from "@/components/ui/H1";
 
+function toNamedList(arr) {
+  if (!arr?.length) return [];
+  return arr.map((x) => (typeof x === "string" ? { name: x } : { name: x?.name ?? String(x) }));
+}
+
+function normalizeProject(p) {
+  return {
+    name: p.title || p.name,
+    title: p.title || p.name,
+    description: p.description,
+    client: p.client,
+    timeSpend: p.timeSpend,
+    category: p.category,
+    pic: mediaUrl(p.pic),
+    live: p.live || "",
+    github: p.github || "",
+    stack: toNamedList(p.stack),
+    industry: toNamedList(p.industry),
+    scope: toNamedList(p.scope),
+  };
+}
+
 export default function WorksPage() {
-  const [project, setProject] = useState(projects[0]);
+  const [projects, setProjects] = useState(() => fallbackProjects.map(normalizeProject));
+  const [project, setProject] = useState(() => normalizeProject(fallbackProjects[0]));
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await get("/api/projects");
+      if (cancelled || !res.ok) return;
+      const list = res.data?.data?.projects;
+      if (!list?.length) return;
+      const normalized = list.map(normalizeProject);
+      setProjects(normalized);
+      setProject(normalized[0]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleSlideChange = (swiper) => {
     const currentIndex = swiper.activeIndex;
@@ -29,6 +70,7 @@ export default function WorksPage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-start gap-12 xl:flex-row">
           <div className="relative w-full xl:w-[35%]">
             <Swiper
+              key={projects.map((p) => p.name).join("|")}
               modules={[Navigation, Pagination, Autoplay, EffectCube]}
               spaceBetween={30}
               slidesPerView={1}
@@ -56,6 +98,7 @@ export default function WorksPage() {
                       sizes="(max-width: 1280px) 100vw, 35vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       priority={index === 0}
+                      unoptimized={proj.pic?.startsWith("http")}
                     />
                     {(proj.live || proj.github) && (
                       <div className="absolute bottom-4 left-0 right-0 z-10 flex flex-wrap justify-center gap-3 px-4">

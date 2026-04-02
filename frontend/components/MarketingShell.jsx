@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { SplashGate } from "@/components/SplashGate";
 
 export function MarketingShell({ children }) {
   const pathname = usePathname();
@@ -13,10 +14,15 @@ export function MarketingShell({ children }) {
   }
 
   return (
-    <>
+    <SplashGate>
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <Header />
-      <main className="min-h-screen pt-16">{children}</main>
+      <main id="main-content" className="min-h-screen m" tabIndex={-1}>
+        {children}
+      </main>
       <Footer />
-    </>
+    </SplashGate>
   );
 }

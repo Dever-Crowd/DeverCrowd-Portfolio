@@ -1,131 +1,154 @@
-'use client'
-import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+"use client";
 
-const BlogsAdminContent = () => {
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Edit, Trash2, Search } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminLoader } from "@/components/admin/AdminLoader";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
+
+function BlogsAdminContent() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [editingPost, setEditingPost] = useState(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
   const limit = 6;
-  const currentPage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+  const currentPage = Number.isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
 
   useEffect(() => {
-    fetchPosts();
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+        const data = await response.json();
+        if (!cancelled) setPosts(data);
+      } catch {
+        if (!cancelled) toast.error("Could not load posts");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
-
-  const fetchPosts = async () => {
-    try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-      const data = await response.json();
-      setPosts(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-        method: 'DELETE',
-      });
-      setPosts(posts.filter(post => post.id !== id));
-    } catch (error) {
-      console.error(error);
+      await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, { method: "DELETE" });
+      setPosts((prev) => prev.filter((post) => post.id !== id));
+      toast.success("Post deleted (demo)");
+    } catch {
+      toast.error("Delete failed");
     }
   };
 
-  const handleSave = async (post) => {
+  const handleSave = async () => {
+    if (!editingPost?.title?.trim()) {
+      toast.error("Title is required");
+      return;
+    }
     try {
-      const method = post.id ? 'PUT' : 'POST';
-      const url = post.id
-        ? `https://jsonplaceholder.typicode.com/posts/${post.id}`
-        : 'https://jsonplaceholder.typicode.com/posts';
+      const isNew = !editingPost.id;
+      const method = editingPost.id ? "PUT" : "POST";
+      const url = editingPost.id
+        ? `https://jsonplaceholder.typicode.com/posts/${editingPost.id}`
+        : "https://jsonplaceholder.typicode.com/posts";
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(post),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editingPost.title,
+          body: editingPost.body || "",
+          userId: editingPost.userId || 1,
+        }),
       });
-
       const data = await response.json();
-
-      if (post.id) {
-        setPosts(posts.map(p => p.id === post.id ? data : p));
+      if (editingPost.id) {
+        setPosts((prev) => prev.map((p) => (p.id === editingPost.id ? data : p)));
+        toast.success("Post updated (demo)");
       } else {
-        setPosts([data, ...posts]);
+        setPosts((prev) => [data, ...prev]);
+        toast.success("Post created (demo)");
       }
-
       setEditingPost(null);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      toast.error("Save failed");
     }
   };
 
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.body.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPosts = posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.body.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredPosts.length / limit);
-  const paginatedPosts = filteredPosts.slice(
-    (currentPage - 1) * limit,
-    currentPage * limit
-  );
+  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / limit));
+  const paginatedPosts = filteredPosts.slice((currentPage - 1) * limit, currentPage * limit);
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading blog posts...</p>
-        </div>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <AdminLoader label="Loading blog posts…" />
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Blog Management</h1>
-          <p className="text-muted-foreground">Manage your blog posts and content</p>
-        </div>
-        <Button onClick={() => setEditingPost({ id: 0, title: '', body: '', userId: 1 })}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Post
+    <div className="space-y-8 p-4 sm:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Blog"
+        description="Demo CRUD against JSONPlaceholder. Swap URLs for your real blog API."
+      >
+        <Button
+          type="button"
+          className="gap-2"
+          onClick={() => setEditingPost({ id: 0, title: "", body: "", userId: 1 })}
+        >
+          <Plus className="h-4 w-4" />
+          New post
         </Button>
-      </div>
+      </AdminPageHeader>
 
-      <Card>
+      <Card className="border-border shadow-sm">
         <CardHeader>
-          <CardTitle>Search Posts</CardTitle>
+          <CardTitle className="text-base">Search</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <div className="relative max-w-xl">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search blog posts..."
+              placeholder="Search posts…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -137,79 +160,100 @@ const BlogsAdminContent = () => {
       <Dialog open={!!editingPost} onOpenChange={(open) => !open && setEditingPost(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{editingPost?.id ? 'Edit Post' : 'New Post'}</DialogTitle>
+            <DialogTitle>{editingPost?.id ? "Edit post" : "New post"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="Post title"
-              value={editingPost?.title || ''}
-              onChange={(e) => setEditingPost((p) => ({ ...p, title: e.target.value }))}
-            />
-
-            <DialogFooter className="mt-4 flex justify-end gap-2">
-              <Button onClick={() => handleSave(editingPost)}>Save</Button>
-              <Button variant="outline" onClick={() => setEditingPost(null)}>Cancel</Button>
-            </DialogFooter>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="post-title">Title</Label>
+              <Input
+                id="post-title"
+                value={editingPost?.title || ""}
+                onChange={(e) => setEditingPost((p) => ({ ...p, title: e.target.value }))}
+                placeholder="Post title"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="post-body">Body</Label>
+              <Textarea
+                id="post-body"
+                rows={10}
+                value={editingPost?.body || ""}
+                onChange={(e) => setEditingPost((p) => ({ ...p, body: e.target.value }))}
+                placeholder="Write your content…"
+                className="min-h-[200px] resize-y"
+              />
+            </div>
           </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" type="button" onClick={() => setEditingPost(null)}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={handleSave}>
+              Save
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedPosts.map((post) => (
-          <Card key={post.id} className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <Badge variant="secondary">Post #{post.id}</Badge>
-                <div className="flex space-x-1">
-                  <Button variant="ghost" size="sm" onClick={() => setEditingPost(post)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleDelete(post.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+      {paginatedPosts.length === 0 ? (
+        <AdminEmptyState title="No posts" description="Adjust search or create a new post." />
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {paginatedPosts.map((post) => (
+            <Card key={post.id} className="border-border shadow-sm transition-shadow hover:shadow-md">
+              <CardHeader className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <Badge variant="secondary">#{post.id}</Badge>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditingPost(post)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(post.id)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="line-clamp-3">
-                {post.body}
-              </CardDescription>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <CardTitle className="line-clamp-2 text-lg leading-snug">{post.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="line-clamp-4">{post.body}</CardDescription>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      <div className="flex justify-center gap-4 mt-6">
-        <Button
-          disabled={currentPage === 1}
-          onClick={() => router.push(`?page=${currentPage - 1}`)}
-        >
-          Previous
-        </Button>
-        <span className="text-sm text-muted-foreground self-center">
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          disabled={currentPage === totalPages}
-          onClick={() => router.push(`?page=${currentPage + 1}`)}
-        >
-          Next
-        </Button>
-      </div>
+      {filteredPosts.length > limit && (
+        <div className="flex flex-wrap items-center justify-center gap-4 border-t border-border pt-6">
+          <Button
+            variant="outline"
+            disabled={currentPage === 1}
+            onClick={() => router.push(`?page=${currentPage - 1}`)}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            disabled={currentPage >= totalPages}
+            onClick={() => router.push(`?page=${currentPage + 1}`)}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="p-6">
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
-            <p className="mt-4 text-muted-foreground">Loading…</p>
-          </div>
+        <div className="p-4 sm:p-6 lg:p-8">
+          <AdminLoader />
         </div>
       }
     >

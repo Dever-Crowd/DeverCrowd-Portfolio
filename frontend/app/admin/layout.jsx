@@ -1,80 +1,92 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import {
-  LayoutDashboard,
-  FileText,
-  Briefcase,
-  Settings,
-  Users,
-  CheckSquare,
-  LogOut,
-  Code2,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-const DashboardLayout = ({ children }) => {
-  const navigation = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Blog", href: "/admin/blogs", icon: FileText },
-    { name: "Projects", href: "/admin/projects", icon: Briefcase },
-    { name: "Services", href: "/admin/services", icon: Settings },
-    { name: "Admins", href: "/admin/admins", icon: Users },
-    { name: "Messages", href: "/admin/messages", icon: CheckSquare },
-  ];
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
+import { Toaster } from "sonner";
+import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
+import { AdminSidebarNav } from "@/components/admin/AdminSidebarNav";
+import { AdminAuthGate } from "@/components/admin/AdminAuthGate";
+import { cn } from "@/lib/utils";
+
+export default function DashboardLayout({ children }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const isActive = (path) => pathname === path;
+  const isLogin = pathname === "/admin/login";
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  if (isLogin) {
+    return (
+      <>
+        <Toaster richColors position="top-right" closeButton />
+        {children}
+      </>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="fixed inset-y-0 left-0 w-64 border-r border-border bg-card">
-        <div className="flex h-full flex-col">
-          <Link href="/" className="flex items-center border-b border-border px-6 py-4">
-            <Code2 className="h-8 w-8 text-primary" />
-            <span className="ml-2 text-xl font-bold gradient-text">DeverCrowd</span>
-          </Link>
+    <AdminAuthGate>
+      <div className="min-h-screen bg-muted/20">
+        <Toaster richColors position="top-right" closeButton />
 
-          <nav className="flex-1 space-y-2 px-4 py-6">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive(item.href)
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  }`}
-                >
-                  <Icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </nav>
+        <header className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-card/90 px-4 backdrop-blur-md lg:hidden">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            aria-label="Open navigation menu"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          <span className="truncate text-sm font-semibold text-foreground">Admin</span>
+          <ThemeToggle />
+        </header>
 
-          <div className="border-t border-border px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                  <span className="text-sm font-medium">DC</span>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-foreground">Admin</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" type="button" aria-label="Sign out">
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
+        <aside
+          className={cn(
+            "fixed inset-y-0 left-0 z-50 w-[min(100vw-3rem,18rem)] border-r border-border bg-card shadow-xl transition-transform duration-200 ease-out lg:hidden",
+            mobileOpen ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
+          <div className="flex h-14 items-center justify-end border-b border-border px-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Close navigation menu"
+              onClick={() => setMobileOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-        </div>
+          <AdminSidebarNav className="h-[calc(100%-3.5rem)]" onNavigate={() => setMobileOpen(false)} />
+        </aside>
+
+        {mobileOpen ? (
+          <button
+            type="button"
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[1px] lg:hidden"
+            aria-label="Close menu"
+            onClick={() => setMobileOpen(false)}
+          />
+        ) : null}
+
+        <aside className="fixed inset-y-0 left-0 z-30 hidden h-full w-64 flex-col border-r border-border bg-card lg:flex">
+          <div className="flex h-14 shrink-0 items-center justify-end border-b border-border px-3">
+            <ThemeToggle />
+          </div>
+          <AdminSidebarNav className="min-h-0 flex-1 overflow-hidden" />
+        </aside>
+
+        <main className="min-h-screen pt-14 lg:ml-64 lg:pt-0">{children}</main>
       </div>
-
-      <div className="ml-64 min-h-screen">{children}</div>
-    </div>
+    </AdminAuthGate>
   );
-};
-
-export default DashboardLayout;
+}

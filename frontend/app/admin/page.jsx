@@ -1,5 +1,7 @@
 "use client";
-import React from "react";
+
+import dynamic from "next/dynamic";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -9,15 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import {
   Users,
   FileText,
   Briefcase,
@@ -25,203 +18,183 @@ import {
   TrendingUp,
   TrendingDown,
   CheckSquare,
+  ArrowRight,
+  Tags,
 } from "lucide-react";
+import { motion } from "motion/react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
-const data = [
-  { name: "Jan", projects: 4, blogs: 8 },
-  { name: "Feb", projects: 3, blogs: 12 },
-  { name: "Mar", projects: 6, blogs: 10 },
-  { name: "Apr", projects: 8, blogs: 15 },
-  { name: "May", projects: 5, blogs: 18 },
-  { name: "Jun", projects: 9, blogs: 22 },
+const AdminChartsSection = dynamic(() => import("./AdminChartsSection"), {
+  ssr: false,
+  loading: () => (
+    <Card className="border-border">
+      <CardHeader>
+        <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+        <div className="mt-2 h-4 w-64 max-w-full animate-pulse rounded bg-muted" />
+      </CardHeader>
+      <CardContent>
+        <div className="h-[300px] animate-pulse rounded-lg bg-muted/60" />
+      </CardContent>
+    </Card>
+  ),
+});
+
+const stats = [
+  {
+    title: "Total projects",
+    value: "24",
+    icon: Briefcase,
+    delta: "+12%",
+    positive: true,
+  },
+  {
+    title: "Blog posts",
+    value: "85",
+    icon: FileText,
+    delta: "+23%",
+    positive: true,
+  },
+  {
+    title: "Active users",
+    value: "1,234",
+    icon: Users,
+    delta: "-3%",
+    positive: false,
+  },
+  {
+    title: "Messages",
+    value: "42",
+    icon: MessageSquare,
+    delta: "+8%",
+    positive: true,
+  },
 ];
-const page = () => {
+
+const activity = [
+  { dot: "bg-[var(--chart-1)]", title: 'New project "E-commerce Platform" created', time: "2 hours ago" },
+  { dot: "bg-[var(--chart-2)]", title: 'Blog post "React best practices" published', time: "5 hours ago" },
+  { dot: "bg-[var(--chart-3)]", title: 'Service "Mobile development" updated', time: "1 day ago" },
+  { dot: "bg-[var(--chart-4)]", title: "New admin user added", time: "2 days ago" },
+];
+
+export default function AdminDashboardPage() {
   return (
-    <div className="p-6 space-y-3 w-full">
-      
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here's what's happening with your projects.
-        </p>
+    <div className="space-y-8 p-4 sm:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Dashboard"
+        description="Welcome back. Here’s a snapshot of activity across your workspace."
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((s, i) => (
+          <motion.div
+            key={s.title}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Card className="border-border shadow-sm transition-shadow hover:shadow-md">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{s.title}</CardTitle>
+                <s.icon className="h-4 w-4 text-muted-foreground" aria-hidden />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-semibold tracking-tight">{s.value}</div>
+                <p className="mt-1 flex items-center text-xs text-muted-foreground">
+                  <span
+                    className={`mr-1 inline-flex items-center font-medium ${
+                      s.positive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+                    }`}
+                  >
+                    {s.positive ? (
+                      <TrendingUp className="mr-0.5 h-3 w-3" />
+                    ) : (
+                      <TrendingDown className="mr-0.5 h-3 w-3" />
+                    )}
+                    {s.delta}
+                  </span>
+                  from last month
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Projects
-            </CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="inline-flex items-center text-green-600">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                +12%
-              </span>{" "}
-              from last month
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <AdminChartsSection />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Blog Posts</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">85</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="inline-flex items-center text-green-600">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                +23%
-              </span>{" "}
-              from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="inline-flex items-center text-red-600">
-                <TrendingDown className="h-3 w-3 mr-1" />
-                -3%
-              </span>{" "}
-              from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Messages</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">42</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="inline-flex items-center text-green-600">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                +8%
-              </span>{" "}
-              from last month
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle>Monthly Activity</CardTitle>
-            <CardDescription>
-              Projects and blog posts created each month
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="projects" fill="#8884d8" name="Projects" />
-                <Bar dataKey="blogs" fill="#82ca9d" name="Blog Posts" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest updates and changes</CardDescription>
+            <CardTitle>Recent activity</CardTitle>
+            <CardDescription>Latest updates across projects and content</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  New project "E-commerce Platform" created
-                </p>
-                <p className="text-xs text-muted-foreground">2 hours ago</p>
+            {activity.map((item) => (
+              <div key={item.title} className="flex gap-3">
+                <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${item.dot}`} aria-hidden />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium leading-snug text-foreground">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">{item.time}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  Blog post "React Best Practices" published
-                </p>
-                <p className="text-xs text-muted-foreground">5 hours ago</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  Service "Mobile Development" updated
-                </p>
-                <p className="text-xs text-muted-foreground">1 day ago</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">New admin user added</p>
-                <p className="text-xs text-muted-foreground">2 days ago</p>
-              </div>
-            </div>
+            ))}
           </CardContent>
         </Card>
       </div>
-      {/* Quick Actions */}
-      <Card>
+
+      <Card className="border-border shadow-sm">
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Common tasks and shortcuts</CardDescription>
+          <CardTitle>Quick actions</CardTitle>
+          <CardDescription>Shortcuts to common admin tasks</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <Button variant="outline" className="h-20 flex-col">
-              <Briefcase className="h-6 w-6 mb-2" />
-              New Project
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <Button variant="outline" className="h-auto flex-col gap-2 py-4" asChild>
+              <Link href="/admin/projects/add">
+                <Briefcase className="h-6 w-6 text-primary" />
+                <span>New project</span>
+                <ArrowRight className="h-3 w-3 opacity-50" />
+              </Link>
             </Button>
-            <Button variant="outline" className="h-20 flex-col">
-              <FileText className="h-6 w-6 mb-2" />
-              Write Blog Post
+            <Button variant="outline" className="h-auto flex-col gap-2 py-4" asChild>
+              <Link href="/admin/blogs">
+                <FileText className="h-6 w-6 text-primary" />
+                <span>Blog posts</span>
+                <ArrowRight className="h-3 w-3 opacity-50" />
+              </Link>
             </Button>
-            <Button variant="outline" className="h-20 flex-col">
-              <Users className="h-6 w-6 mb-2" />
-              Manage Users
+            <Button variant="outline" className="h-auto flex-col gap-2 py-4" asChild>
+              <Link href="/admin/pricing">
+                <Tags className="h-6 w-6 text-primary" />
+                <span>Pricing</span>
+                <ArrowRight className="h-3 w-3 opacity-50" />
+              </Link>
             </Button>
-            <Button variant="outline" className="h-20 flex-col">
-              <MessageSquare className="h-6 w-6 mb-2" />
-              View Messages
+            <Button variant="outline" className="h-auto flex-col gap-2 py-4" asChild>
+              <Link href="/admin/admins">
+                <Users className="h-6 w-6 text-primary" />
+                <span>Manage admins</span>
+                <ArrowRight className="h-3 w-3 opacity-50" />
+              </Link>
             </Button>
-            <Button
-              variant="outline"
-              className="h-20 flex-col"
-              onClick={() => (window.location.href = "/dashboard/tasks")}
-            >
-              <CheckSquare className="h-6 w-6 mb-2" />
-              Manage Tasks
+            <Button variant="outline" className="h-auto flex-col gap-2 py-4" asChild>
+              <Link href="/admin/messages">
+                <MessageSquare className="h-6 w-6 text-primary" />
+                <span>Messages</span>
+                <ArrowRight className="h-3 w-3 opacity-50" />
+              </Link>
+            </Button>
+            <Button variant="outline" className="h-auto flex-col gap-2 py-4" asChild>
+              <Link href="/admin/services">
+                <CheckSquare className="h-6 w-6 text-primary" />
+                <span>Services</span>
+                <ArrowRight className="h-3 w-3 opacity-50" />
+              </Link>
             </Button>
           </div>
         </CardContent>
       </Card>
     </div>
   );
-};
-
-export default page;
+}

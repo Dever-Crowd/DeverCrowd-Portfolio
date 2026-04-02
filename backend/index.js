@@ -6,6 +6,7 @@ const adminRoutes = require("./routes/admin.route");
 const projectRoutes = require("./routes/project.route");
 const contactRoutes = require("./routes/message.route");
 const blogRoutes = require("./routes/blog.route");
+const pricingRoutes = require("./routes/pricing.route");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const httpResponse = require('./utils/httpResponse')
@@ -22,7 +23,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
 console.log("Blog Routes Loaded");
-app.use("/api/blog", blogRoutes)
+app.use("/api/blog", blogRoutes);
+app.use("/api/pricing", pricingRoutes);
 
 app.use('/uploads', express.static('uploads'));
 

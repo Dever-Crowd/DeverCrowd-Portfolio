@@ -8,23 +8,9 @@ export const vmc = [
     ),
     desc: (
       <>
-        At <span className="text-blue-500 font-semibold">DeverCrowd</span>, our
-        vision is to become the go-to digital partner for ambitious brands,
-        shaping the future of the web with innovation, creativity, and trust.
-      </>
-    ),
-  },
-  {
-    title: "Core Values",
-    icon: (
-      <span role="img" aria-label="globe">
-        💎
-      </span>
-    ),
-    desc: (
-      <>
-        Integrity, innovation, and teamwork fuel everything we do — guiding how
-        we work, deliver, and grow with our clients.
+        We aim to be the trusted digital product partner for ambitious
+        businesses, helping them compete, scale, and lead through better digital
+        experiences.
       </>
     ),
   },
@@ -37,22 +23,39 @@ export const vmc = [
     ),
     desc: (
       <>
-        We empower startups and businesses by building scalable, user-centric
-        solutions that transform ideas into real digital impact.
+        We build websites, mobile apps, and custom digital solutions that solve
+        real business problems and deliver measurable outcomes.
+      </>
+    ),
+  },
+  {
+    title: "Approach",
+    icon: (
+      <span role="img" aria-label="gear">
+        ⚙️
+      </span>
+    ),
+    desc: (
+      <>
+        We work as a product-minded team: understand your goals, design with
+        users in mind, and deliver reliable software with clear communication at
+        every step.
       </>
     ),
   },
 ];
 
 export const whoweare = {
-  title: "Who We Are?",
+  title: "About DeverCrowd",
   description: (
     <>
-      At <span className="text-primary font-semibold">DeverCrowd</span>, we're
-      more than developers — we're partners in innovation. From concept to code,
-      we design and engineer seamless digital experiences that grow with your
-      business. Whether it's a product, platform, or complete ecosystem — we
-      make it real.
+      <span className="text-primary font-semibold">DeverCrowd</span> is a
+      digital product studio focused on building business-ready solutions.
+      <br />
+      
+      We partner with startups and companies to plan, design, and develop
+      high-performing websites, mobile applications, and scalable platforms that
+      support real growth.
     </>
   ),
 };

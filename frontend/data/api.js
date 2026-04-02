@@ -1,3 +1,5 @@
+import { getAdminToken } from "@/lib/auth";
+
 const baseUrl =
   (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_URL) ||
   "http://localhost:3001";
@@ -5,6 +7,17 @@ const baseUrl =
 function joinUrl(path) {
   const p = path.startsWith("/") ? path : `/${path}`;
   return `${baseUrl.replace(/\/$/, "")}${p}`;
+}
+
+function mergeHeaders(headers = {}) {
+  const h = { ...headers };
+  if (typeof window !== "undefined") {
+    const t = getAdminToken();
+    if (t && !h.Authorization) {
+      h.Authorization = t;
+    }
+  }
+  return h;
 }
 
 async function parseJsonSafe(response) {
@@ -21,7 +34,7 @@ export const get = async (url, headers = {}) => {
   try {
     const res = await fetch(joinUrl(url), {
       method: "GET",
-      headers,
+      headers: mergeHeaders(headers),
     });
 
     const data = await parseJsonSafe(res);
@@ -43,10 +56,10 @@ export const post = async (url, body, headers = {}) => {
     const res = await fetch(joinUrl(url), {
       method: "POST",
       headers: isFormData
-        ? headers
+        ? mergeHeaders(headers)
         : {
             "Content-Type": "application/json",
-            ...headers,
+            ...mergeHeaders(headers),
           },
       body: isFormData ? body : JSON.stringify(body),
     });
@@ -71,10 +84,10 @@ export const put = async (url, body, headers = {}) => {
     const res = await fetch(joinUrl(url), {
       method: "PUT",
       headers: isFormData
-        ? headers
+        ? mergeHeaders(headers)
         : {
             "Content-Type": "application/json",
-            ...headers,
+            ...mergeHeaders(headers),
           },
       body: isFormData ? body : JSON.stringify(body),
     });
@@ -96,7 +109,7 @@ export const del = async (url, headers = {}) => {
   try {
     const res = await fetch(joinUrl(url), {
       method: "DELETE",
-      headers,
+      headers: mergeHeaders(headers),
     });
 
     const data = await parseJsonSafe(res);
