@@ -44,7 +44,7 @@ const MotionP = motion(P);
 const Hero = () => {
   return (
     <motion.section
-      id="home"
+      id="hero"
       className="relative flex justify-center items-center w-full min-h-screen overflow-hidden px-4 sm:px-16"
       variants={containerVariants}
       initial="hidden"

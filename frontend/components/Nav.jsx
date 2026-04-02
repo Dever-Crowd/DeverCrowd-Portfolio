@@ -13,7 +13,6 @@ const Nav = () => {
 
   const links = [
     { href: "/", label: "Home" },
-    { href: "/#about", label: "About" },
     { href: "/services", label: "Services" },
     { href: "/pricing", label: "Pricing" },
     { href: "/works", label: "Works" },
@@ -40,12 +39,9 @@ const Nav = () => {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2" aria-label="DeverkCrowd home">
-          <Logo width={96} height={32} />
-          <span
-            className="font-semibold text-base"
-            style={{ color: "var(--foreground)" }}
-          >
-            <span style={{ color: "var(--primary)" }}>Dever</span>Crowd
+          {/* <Logo width={96} height={32} /> */}
+          <span className="font-semibold text-base text-foreground">
+            <span className="text-primary">Dever</span>Crowd
           </span>
         </Link>
 

@@ -15,17 +15,6 @@ export default function About() {
       <H1>{whoweare.title}</H1>
       {/* TOP */}
       <div className="flex flex-col items-center justify-center gap-4 text-center">
-        <P
-          as="span"
-          variant="eyebrow"
-          className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] sm:text-xs"
-          style={{
-            border: "1px solid color-mix(in srgb, var(--border) 75%, transparent)",
-            background: "color-mix(in srgb, var(--card) 45%, transparent)",
-          }}
-        >
-          Who We Are
-        </P>
         <div className="max-w-3xl rounded-xl text-sm text-foreground md:text-base">
           <P variant="muted">{whoweare.description}</P>
         </div>

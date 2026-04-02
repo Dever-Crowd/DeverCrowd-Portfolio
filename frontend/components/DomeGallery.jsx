@@ -2,34 +2,36 @@ import { useEffect, useMemo, useRef, useCallback } from 'react';
 import { useGesture } from '@use-gesture/react';
 
 const DEFAULT_IMAGES = [
-  {
-    src: 'https://images.unsplash.com/photo-1755331039789-7e5680e26e8f?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    alt: 'Abstract art'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1755569309049-98410b94f66d?q=80&w=772&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    alt: 'Modern sculpture'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1755497595318-7e5e3523854f?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    alt: 'Digital artwork'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1755353985163-c2a0fe5ac3d8?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    alt: 'Contemporary art'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1745965976680-d00be7dc0377?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    alt: 'Geometric pattern'
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1752588975228-21f44630bb3c?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    alt: 'Textured surface'
-  },
-  {
-    src: 'https://pbs.twimg.com/media/Gyla7NnXMAAXSo_?format=jpg&name=large',
-    alt: 'Social media image'
-  }
+  { src: 'https://cdn.simpleicons.org/react/61DAFB', alt: 'React' },
+  { src: 'https://cdn.simpleicons.org/nextdotjs/ffffff', alt: 'Next.js' },
+  { src: 'https://cdn.simpleicons.org/typescript/3178C6', alt: 'TypeScript' },
+  { src: 'https://cdn.simpleicons.org/tailwindcss/06B6D4', alt: 'Tailwind CSS' },
+  { src: 'https://cdn.simpleicons.org/nestjs/E0234E', alt: 'NestJS' },
+  { src: 'https://cdn.simpleicons.org/flutter/02569B', alt: 'Flutter' },
+  { src: 'https://cdn.simpleicons.org/postgresql/4169E1', alt: 'PostgreSQL' },
+  { src: 'https://cdn.simpleicons.org/docker/2496ED', alt: 'Docker' },
+  { src: 'https://cdn.simpleicons.org/redis/FF4438', alt: 'Redis' },
+  { src: 'https://cdn.simpleicons.org/go/00ADD8', alt: 'Go' },
+  { src: 'https://cdn.simpleicons.org/python/3776AB', alt: 'Python' },
+  { src: 'https://cdn.simpleicons.org/prisma/2D3748', alt: 'Prisma' },
+  { src: 'https://cdn.simpleicons.org/graphql/E10098', alt: 'GraphQL' },
+  { src: 'https://cdn.simpleicons.org/mongodb/47A248', alt: 'MongoDB' },
+  { src: 'https://cdn.simpleicons.org/nginx/009639', alt: 'Nginx' },
+  { src: 'https://cdn.simpleicons.org/kubernetes/326CE5', alt: 'Kubernetes' },
+  { src: 'https://cdn.simpleicons.org/githubactions/2088FF', alt: 'GitHub Actions' },
+  { src: 'https://cdn.simpleicons.org/git/F05032', alt: 'Git' },
+  { src: 'https://cdn.simpleicons.org/linux/FCC624', alt: 'Linux' },
+  { src: 'https://cdn.simpleicons.org/amazonaws/FF9900', alt: 'AWS' },
+  { src: 'https://cdn.simpleicons.org/vercel/ffffff', alt: 'Vercel' },
+  { src: 'https://cdn.simpleicons.org/supabase/3ECF8E', alt: 'Supabase' },
+  { src: 'https://cdn.simpleicons.org/firebase/FFCA28', alt: 'Firebase' },
+  { src: 'https://cdn.simpleicons.org/figma/F24E1E', alt: 'Figma' },
+  { src: 'https://cdn.simpleicons.org/jest/C21325', alt: 'Jest' },
+  { src: 'https://cdn.simpleicons.org/vitest/6E9F18', alt: 'Vitest' },
+  { src: 'https://cdn.simpleicons.org/eslint/4B32C3', alt: 'ESLint' },
+  { src: 'https://cdn.simpleicons.org/sass/CC6699', alt: 'Sass' },
+  { src: 'https://cdn.simpleicons.org/webpack/8DD6F9', alt: 'Webpack' },
+  { src: 'https://cdn.simpleicons.org/vite/646CFF', alt: 'Vite' },
 ];
 
 const DEFAULTS = {
@@ -830,7 +832,7 @@ export default function DomeGallery({
                     right: '-999px'
                   }}>
                   <div
-                    className="item__image absolute block overflow-hidden cursor-pointer bg-gray-200 transition-transform duration-300"
+                    className="item__image absolute block overflow-hidden cursor-pointer bg-section transition-transform duration-300"
                     role="button"
                     tabIndex={0}
                     aria-label={it.alt || 'Open image'}
