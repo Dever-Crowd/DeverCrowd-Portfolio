@@ -128,7 +128,7 @@ function BlogsAdminContent() {
         <Button asChild className="gap-2">
           <Link href="/admin/blogs/add">
             <Plus className="h-4 w-4" />
-            New project
+            New Blog
           </Link>
         </Button>
       </AdminPageHeader>

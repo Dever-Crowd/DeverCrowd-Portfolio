@@ -3,6 +3,7 @@ import H1 from "@/components/ui/H1";
 import P from "@/components/ui/P";
 import { useAdmins } from "@/hooks/useAdmins";
 import ProfileCard from '../ProfileCard'
+import TiltedCard from '../TiltedCard';
 
 const OurStack = () => {
     const { data: admins = [] } = useAdmins();
@@ -19,24 +20,37 @@ const OurStack = () => {
             <div className="flex flex-wrap relative items-center justify-center w-full gap-5">
                 {admins.map((admin) => {
                     return (
-                        <ProfileCard
-                            key={admin._id}
-                            name={admin.nickname}
-                            title={admin.role}
-                            handle={admin.username}
-                            status="Online"
-                            contactText="Contact Me"
-                            avatarUrl={admin.pic}
-                            showUserInfo={true}
-                            enableTilt={true}
-                            enableMobileTilt={true}
-                            onContactClick={() => console.log('Contact clicked')}
-                            behindGlowColor=""
-                            iconUrl="/icons/code.png"
-                            behindGlowEnabled
-                            innerGradient="linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)"
-                            behindGlowSize="50%"
-                            miniAvatarUrl={admin.pic}
+                        <TiltedCard
+                            imageSrc={admin.pic}
+                            altText={admin.username}
+                            captionText={admin.username}
+                            containerHeight="300px"
+                            containerWidth="300px"
+                            imageHeight="300px"
+                            imageWidth="300px"
+                            rotateAmplitude={12}
+                            scaleOnHover={1.05}
+                            showMobileWarning={false}
+                            showTooltip
+                            displayOverlayContent
+                            overlayContent={
+                                <div className="w-full rounded-b-[15px] border-t border-white/10 bg-black/60 px-4 py-3 backdrop-blur-md">
+                                    {/* Name + Role */}
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-sm font-semibold text-white leading-none">
+                                                {admin.nickname}
+                                            </span>
+                                            <span className="text-[10px] text-white/50 leading-none">
+                                                {admin.email}
+                                            </span>
+                                        </div>
+                                        <span className="shrink-0 rounded-full border border-primary bg-primary/40 px-2.5 py-1 text-[10px] font-semibold text- uppercase tracking-wide">
+                                            {admin.role}
+                                        </span>
+                                    </div>
+                                </div>
+                            }
                         />
                     )
                 })}
