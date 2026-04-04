@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getAdminToken } from "@/lib/auth";
+import { getAdminCookie,STORAGE_TOKEN_KEY } from "@/lib/auth";
 
 export function AdminAuthGate({ children }) {
   const pathname = usePathname();
@@ -11,7 +11,7 @@ export function AdminAuthGate({ children }) {
 
   useEffect(() => {
     if (isLogin) return;
-    const t = getAdminToken();
+    const t = getAdminCookie(STORAGE_TOKEN_KEY);
     if (!t) {
       router.replace("/admin/login");
     }
@@ -19,7 +19,7 @@ export function AdminAuthGate({ children }) {
 
   if (isLogin) return children;
 
-  if (typeof window !== "undefined" && !getAdminToken()) {
+  if (typeof window !== "undefined" && !getAdminCookie(STORAGE_TOKEN_KEY)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
         <p className="text-sm text-muted-foreground">Checking session…</p>

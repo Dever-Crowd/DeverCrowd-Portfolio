@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "@/components/ThemeToggle";
 import { AdminSidebarNav } from "@/components/admin/AdminSidebarNav";
 import { AdminAuthGate } from "@/components/admin/AdminAuthGate";
 import { cn } from "@/lib/utils";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
 
 export default function DashboardLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <AdminAuthGate>
+      <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-muted/20">
         <Toaster richColors position="top-right" closeButton />
 
@@ -46,7 +48,6 @@ export default function DashboardLayout({ children }) {
             <Menu className="h-5 w-5" />
           </Button>
           <span className="truncate text-sm font-semibold text-foreground">Admin</span>
-          <ThemeToggle />
         </header>
 
         <aside
@@ -79,14 +80,12 @@ export default function DashboardLayout({ children }) {
         ) : null}
 
         <aside className="fixed inset-y-0 left-0 z-30 hidden h-full w-64 flex-col border-r border-border bg-card lg:flex">
-          <div className="flex h-14 shrink-0 items-center justify-end border-b border-border px-3">
-            <ThemeToggle />
-          </div>
           <AdminSidebarNav className="min-h-0 flex-1 overflow-hidden" />
         </aside>
 
         <main className="min-h-screen pt-14 lg:ml-64 lg:pt-0">{children}</main>
       </div>
+      </QueryClientProvider>
     </AdminAuthGate>
   );
 }

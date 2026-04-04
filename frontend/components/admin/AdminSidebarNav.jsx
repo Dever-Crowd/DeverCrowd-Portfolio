@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { post } from "@/data/api";
-import { clearAdminToken } from "@/lib/auth";
+import { clearAdminCookie, STORAGE_TOKEN_KEY } from "@/lib/auth";
 import { toast } from "sonner";
 
 const navigation = [
@@ -25,7 +25,6 @@ const navigation = [
   { name: "Blog", href: "/admin/blogs", icon: FileText, match: "prefix" },
   { name: "Projects", href: "/admin/projects", icon: Briefcase, match: "prefix" },
   { name: "Pricing", href: "/admin/pricing", icon: Tags, match: "prefix" },
-  { name: "Services", href: "/admin/services", icon: Settings, match: "prefix" },
   { name: "Admins", href: "/admin/admins", icon: Users, match: "prefix" },
   { name: "Messages", href: "/admin/messages", icon: MessageSquare, match: "prefix" },
 ];
@@ -38,14 +37,16 @@ function isActivePath(pathname, href, mode) {
 export function AdminSidebarNav({ className, onNavigate }) {
   const pathname = usePathname();
   const router = useRouter();
-
+  
+  const username = localStorage.getItem('username')
   const handleLogout = async () => {
     try {
       await post("/api/admin/logout", {});
     } catch {
       /* still clear local session */
     }
-    clearAdminToken();
+    clearAdminCookie(STORAGE_TOKEN_KEY);
+    clearAdminCookie("username");
     toast.message("Signed out");
     router.replace("/admin/login");
     router.refresh();
@@ -97,7 +98,7 @@ export function AdminSidebarNav({ className, onNavigate }) {
             DC
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-foreground">Administrator</p>
+            <p className="truncate text-sm font-medium text-foreground">{username}</p>
             <p className="truncate text-xs text-muted-foreground">Dashboard</p>
           </div>
           <Button

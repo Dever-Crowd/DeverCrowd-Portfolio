@@ -12,7 +12,8 @@ import { post } from "@/data/api";
 import { getAdminSelectStyles } from "@/lib/admin-react-select";
 import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
 
 const statusOptions = [
   { value: "pending", label: "Pending" },
@@ -23,13 +24,68 @@ const statusOptions = [
 
 const selectStyles = getAdminSelectStyles();
 
+// Component for form fields with label, input, and error
+function FormField({ label, children, error }) {
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      {children}
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </div>
+  );
+}
+
+// Tags input component
+function TagsInput({ value, onChange, placeholder }) {
+  const [inputValue, setInputValue] = useState("");
+
+  const addTag = () => {
+    const trimmed = inputValue.trim();
+    if (trimmed && !value.includes(trimmed)) {
+      onChange([...value, trimmed]);
+      setInputValue("");
+    }
+  };
+
+  const removeTag = (tag) => {
+    onChange(value.filter((t) => t !== tag));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-1 mb-1">
+        {value.map((tag) => (
+          <div key={tag} className="bg-gray-200 text-gray-800 px-2 py-1 rounded flex items-center gap-1">
+            {tag}
+            <X className="w-3 h-3 cursor-pointer" onClick={() => removeTag(tag)} />
+          </div>
+        ))}
+      </div>
+      <Input
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        onBlur={addTag}
+      />
+    </div>
+  );
+}
+
 export default function AdminAddProjectPage() {
   const router = useRouter();
-  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     title: "",
     description: "",
     pic: null,
+    picPreview: null,
     timeToFinish: "",
     client: "",
     status: "pending",
@@ -42,24 +98,20 @@ export default function AdminAddProjectPage() {
     live: "",
     github: "",
   });
-
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "pic") {
-      setForm((prev) => ({ ...prev, pic: files?.[0] || null }));
+      const file = files?.[0] || null;
+      setForm((prev) => ({
+        ...prev,
+        pic: file,
+        picPreview: file ? URL.createObjectURL(file) : null,
+      }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
-  };
-
-  const handleArrayChange = (field, value) => {
-    const arr = value
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean);
-    setForm((prev) => ({ ...prev, [field]: arr }));
   };
 
   const validate = () => {
@@ -86,43 +138,45 @@ export default function AdminAddProjectPage() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const mutation = useMutation({
+    mutationFn: async (formData) => {
+      const res = await post("/api/projects", formData);
+      if (!res.ok) throw new Error(res.message || "Could not create project");
+      return res;
+    },
+    onSuccess: () => {
+      toast.success("Project created");
+      router.push("/admin/projects");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) {
       toast.error("Please fix the highlighted fields");
       return;
     }
 
-    setSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.append("title", form.title);
-      formData.append("description", form.description);
-      formData.append("pic", form.pic);
-      formData.append("timeToFinish", form.timeToFinish);
-      formData.append("client", form.client);
-      formData.append("status", form.status);
-      formData.append("cost", form.cost);
-      formData.append("timeSpend", form.timeSpend);
-      formData.append("category", form.category);
-      formData.append("live", form.live);
-      formData.append("github", form.github);
-      form.scope.forEach((item) => formData.append("scope[]", item));
-      form.stack.forEach((item) => formData.append("stack[]", item));
-      form.industry.forEach((item) => formData.append("industry[]", item));
+    const formData = new FormData();
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("pic", form.pic);
+    formData.append("timeToFinish", form.timeToFinish);
+    formData.append("client", form.client);
+    formData.append("status", form.status);
+    formData.append("cost", form.cost);
+    formData.append("timeSpend", form.timeSpend);
+    formData.append("category", form.category);
+    formData.append("live", form.live);
+    formData.append("github", form.github);
+    form.scope.forEach((item) => formData.append("scope[]", item));
+    form.stack.forEach((item) => formData.append("stack[]", item));
+    form.industry.forEach((item) => formData.append("industry[]", item));
 
-      const res = await post("/api/projects", formData);
-      if (res.ok) {
-        toast.success("Project created");
-        router.push("/admin/projects");
-      } else {
-        toast.error(res.message || res.data?.message || "Could not create project");
-      }
-    } catch {
-      toast.error("Something went wrong");
-    } finally {
-      setSubmitting(false);
-    }
+    mutation.mutate(formData);
   };
 
   const fieldClass = "space-y-2";
@@ -135,44 +189,32 @@ export default function AdminAddProjectPage() {
       />
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Basics */}
         <Card className="border-border shadow-sm">
           <CardHeader>
             <CardTitle>Basics</CardTitle>
             <CardDescription>Title, client, and categorization</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <div className={fieldClass}>
-              <Label htmlFor="title">Title</Label>
+            <FormField label="Title" error={errors.title}>
               <Input id="title" name="title" value={form.title} onChange={handleChange} />
-              {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="client">Client</Label>
+            </FormField>
+            <FormField label="Client" error={errors.client}>
               <Input id="client" name="client" value={form.client} onChange={handleChange} />
-              {errors.client && <p className="text-sm text-destructive">{errors.client}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="category">Category</Label>
+            </FormField>
+            <FormField label="Category" error={errors.category}>
               <Input id="category" name="category" value={form.category} onChange={handleChange} />
-              {errors.category && <p className="text-sm text-destructive">{errors.category}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="timeToFinish">Time to finish</Label>
+            </FormField>
+            <FormField label="Time to finish" error={errors.timeToFinish}>
               <Input id="timeToFinish" name="timeToFinish" value={form.timeToFinish} onChange={handleChange} />
-              {errors.timeToFinish && <p className="text-sm text-destructive">{errors.timeToFinish}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="cost">Cost</Label>
+            </FormField>
+            <FormField label="Cost" error={errors.cost}>
               <Input id="cost" name="cost" type="number" value={form.cost} onChange={handleChange} min={0} step="0.01" />
-              {errors.cost && <p className="text-sm text-destructive">{errors.cost}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="timeSpend">Time spent</Label>
+            </FormField>
+            <FormField label="Time spent" error={errors.timeSpend}>
               <Input id="timeSpend" name="timeSpend" value={form.timeSpend} onChange={handleChange} />
-              {errors.timeSpend && <p className="text-sm text-destructive">{errors.timeSpend}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label>Status</Label>
+            </FormField>
+            <FormField label="Status" error={errors.status}>
               <Select
                 instanceId="project-status"
                 styles={selectStyles}
@@ -182,83 +224,48 @@ export default function AdminAddProjectPage() {
                 value={statusOptions.find((o) => o.value === form.status)}
                 onChange={(opt) => setForm((prev) => ({ ...prev, status: opt.value }))}
               />
-              {errors.status && <p className="text-sm text-destructive">{errors.status}</p>}
-            </div>
+            </FormField>
           </CardContent>
         </Card>
 
+        {/* Tags & links */}
         <Card className="border-border shadow-sm">
           <CardHeader>
             <CardTitle>Tags & links</CardTitle>
-            <CardDescription>Comma-separated lists and URLs</CardDescription>
+            <CardDescription>Tags and URLs</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <div className={fieldClass}>
-              <Label htmlFor="scope">Scope</Label>
-              <Input
-                id="scope"
-                name="scope"
-                value={form.scope.join(", ")}
-                onChange={(e) => handleArrayChange("scope", e.target.value)}
-                placeholder="Design, Development"
-              />
-              {errors.scope && <p className="text-sm text-destructive">{errors.scope}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="stack">Stack</Label>
-              <Input
-                id="stack"
-                name="stack"
-                value={form.stack.join(", ")}
-                onChange={(e) => handleArrayChange("stack", e.target.value)}
-                placeholder="Next.js, Node"
-              />
-              {errors.stack && <p className="text-sm text-destructive">{errors.stack}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="industry">Industry</Label>
-              <Input
-                id="industry"
-                name="industry"
-                value={form.industry.join(", ")}
-                onChange={(e) => handleArrayChange("industry", e.target.value)}
-                placeholder="SaaS, Retail"
-              />
-              {errors.industry && <p className="text-sm text-destructive">{errors.industry}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="live">Live URL</Label>
+            <FormField label="Scope" error={errors.scope}>
+              <TagsInput value={form.scope} onChange={(arr) => setForm((prev) => ({ ...prev, scope: arr }))} placeholder="Design, Development" />
+            </FormField>
+            <FormField label="Stack" error={errors.stack}>
+              <TagsInput value={form.stack} onChange={(arr) => setForm((prev) => ({ ...prev, stack: arr }))} placeholder="Next.js, Node" />
+            </FormField>
+            <FormField label="Industry" error={errors.industry}>
+              <TagsInput value={form.industry} onChange={(arr) => setForm((prev) => ({ ...prev, industry: arr }))} placeholder="SaaS, Retail" />
+            </FormField>
+            <FormField label="Live URL">
               <Input id="live" name="live" type="url" value={form.live} onChange={handleChange} placeholder="https://" />
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="github">GitHub URL</Label>
+            </FormField>
+            <FormField label="GitHub URL">
               <Input id="github" name="github" type="url" value={form.github} onChange={handleChange} placeholder="https://" />
-            </div>
+            </FormField>
           </CardContent>
         </Card>
 
+        {/* Content & media */}
         <Card className="border-border shadow-sm">
           <CardHeader>
             <CardTitle>Content & media</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className={fieldClass}>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                rows={8}
-                value={form.description}
-                onChange={handleChange}
-                className="min-h-[200px] resize-y"
-              />
-              {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
-            </div>
-            <div className={fieldClass}>
-              <Label htmlFor="pic">Cover image</Label>
+            <FormField label="Description" error={errors.description}>
+              <Textarea id="description" name="description" rows={8} value={form.description} onChange={handleChange} className="min-h-[200px] resize-y" />
+            </FormField>
+            <FormField label="Cover image" error={errors.pic}>
               <Input id="pic" name="pic" type="file" accept="image/*" onChange={handleChange} />
-              {errors.pic && <p className="text-sm text-destructive">{errors.pic}</p>}
-            </div>
+              {form.picPreview && <img src={form.picPreview} alt="Preview" className="mt-2 max-h-40 object-cover rounded" />}
+            </FormField>
           </CardContent>
         </Card>
 
@@ -266,9 +273,9 @@ export default function AdminAddProjectPage() {
           <Button type="button" variant="outline" onClick={() => router.back()}>
             Cancel
           </Button>
-          <Button type="submit" disabled={submitting} className="min-w-[140px] gap-2">
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {submitting ? "Saving…" : "Create project"}
+          <Button type="submit" disabled={mutation.isLoading} className="min-w-[140px] gap-2">
+            {mutation.isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {mutation.isLoading ? "Saving…" : "Create project"}
           </Button>
         </div>
       </form>

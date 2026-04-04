@@ -2,7 +2,7 @@
 
 import React, { useMemo, useRef, useState } from "react";
 
-const DEFAULT_COLOR = "#ffffff";
+const DEFAULT_COLOR = "#0f111a";
 
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
 

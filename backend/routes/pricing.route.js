@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middlewares/auth");
 const roles = require("../utils/roles");
-const pricingController = require("../controller/pricing.controller");
+const pricingController = require("../controllers/pricing.controller");
 const validatorMiddleware = require("../middlewares/validatorMiddleware");
 
 router.get("/", pricingController.getPublic);
@@ -21,7 +21,7 @@ router.post(
   pricingController.createPlan
 );
 
-router.put(
+router.patch(
   "/manage/:id",
   auth.verifyToken,
   auth.allowedTo(roles.ceo, roles.cto),

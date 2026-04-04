@@ -1,12 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true, // مهم — بيخلي JS و TS يشتغلوا مع بعض
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -16,25 +12,16 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    },
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./*"] },
     "module": "esnext"
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+, "app/admin/projects/add/page.jsx", "app/admin/projects/[id]/page.jsx", "app/blogs/[slug]/page.jsx", "app/admin/blogs/[slug]/page.jsx", "data/static/services.js", "app/services/page.tsx", "data/static/contact.js"  ],
+  "exclude": ["node_modules"]
 }

@@ -8,11 +8,11 @@ const upload = require("../middlewares/upload");
 const { check } = require("express-validator");
 const roles = require("../utils/roles");
 const validator = require("../utils/validator");
-const adminController = require("../controller/admin.controller");
-const profileController = require("../controller/profile.controller");
-const taskController = require("../controller/task.controller");
-const commentController = require("../controller/comment.controller");
-const messageController = require("../controller/message.controller");
+const adminController = require("../controllers/admin.controller");
+const profileController = require("../controllers/profile.controller");
+const taskController = require("../controllers/task.controller");
+const commentController = require("../controllers/comment.controller");
+const messageController = require("../controllers/message.controller");
 
 router.route("/authtest").get(auth.verifyToken, adminController.authtest);
 
@@ -60,7 +60,7 @@ router
   .get(
     auth.verifyToken,
     auth.allowedTo(roles.ceo, roles.cto),
-    profileController.getAllProfiles
+    profileController.getAllProfiles 
   );
 
 router
@@ -70,7 +70,13 @@ router
     validatorMiddleware.validateMongoId("id"),
     auth.allowedTo(roles.ceo, roles.cto),
     profileController.getSingleProfile
-  );
+  )
+  .delete(
+    auth.verifyToken,
+    validatorMiddleware.validateMongoId("id"),
+    auth.allowedTo(roles.ceo, roles.cto),
+    profileController.deleteProfile
+  )
 
 router
   .route("/tasks")

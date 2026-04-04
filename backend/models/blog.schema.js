@@ -33,10 +33,15 @@ const blogSchema = mongoose.Schema(
       type: String,
       required: false,
     },
-    writer: {
+    writer_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",
       required: true,
+    },
+    writer_name: {
+      type: String,
+      required: true,
+      default: "Admin"
     },
     writer_pic: {
       type: String,
@@ -62,7 +67,7 @@ const blogSchema = mongoose.Schema(
         required: false,
       },
     ],
-    content: {
+    body: {
       type: String,
       required: false,
     },
@@ -73,7 +78,7 @@ const blogSchema = mongoose.Schema(
     },
     publish_date: {
       type: Date,
-      default: null,
+      default: Date.now(),
     },
   },
   { timestamps: true }

@@ -1,0 +1,26 @@
+{
+  "name": "updateddevercrowd",
+  "version": "1.0.0",
+  "description": "**DeverCrowd** is a startup portfolio web application designed to\r showcase the company's vision, services, and projects through a modern\r and professional online presence.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeverCrowd/UpdatedDeverCrowd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DeverCrowd/UpdatedDeverCrowd/issues"
+  },
+  "homepage": "https://github.com/DeverCrowd/UpdatedDeverCrowd#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

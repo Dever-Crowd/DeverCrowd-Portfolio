@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { post } from "@/data/api";
-import { getAdminToken, setAdminToken } from "@/lib/auth";
+import { getAdminCookie, setAdminCookie, STORAGE_TOKEN_KEY } from "@/lib/auth";
 import { toast } from "sonner";
 
 export default function AdminLoginPage() {
@@ -19,7 +19,7 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (getAdminToken()) {
+    if (getAdminCookie(STORAGE_TOKEN_KEY)) {
       router.replace("/admin");
     }
   }, [router]);
@@ -29,8 +29,9 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       const res = await post("/api/admin/login", { username, password });
-      if (res.ok && res.data?.data?.token) {
-        setAdminToken(res.data.data.token);
+      if (res.ok && res.data?.token) {
+        setAdminCookie(STORAGE_TOKEN_KEY, res.data.token);
+        setAdminCookie("username", res.data.username);
         toast.success("Signed in");
         router.replace("/admin");
         router.refresh();

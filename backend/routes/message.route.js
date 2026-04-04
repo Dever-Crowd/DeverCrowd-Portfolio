@@ -1,4 +1,4 @@
-const messageController = require("../controller/message.controller");
+const messageController = require("../controllers/message.controller");
 const express = require("express");
 const router = express.Router();
 const auth = require("../middlewares/auth");
@@ -9,7 +9,7 @@ const rateLimit = require("../middlewares/rateLimit");
 router
   .route("/")
   .post(
-    // rateLimit.formRateLimiter,
+    rateLimit.formRateLimiter,
     validator.messageValidtor(),
     validateInputs,
     messageController.sendForm

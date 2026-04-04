@@ -7,6 +7,7 @@ const roles = {
     uiux: "UIUX",
     security: "Security",
     viewer: "Viewer",
+    flutter:"Flutter"
 }
 
 module.exports = roles

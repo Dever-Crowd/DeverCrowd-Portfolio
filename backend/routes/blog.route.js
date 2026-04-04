@@ -1,16 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const blogController = require("../controller/blog.controller");
+const blogController = require("../controllers/blog.controller");
 const auth = require("../middlewares/auth");
 const roles = require("../utils/roles");
 const validateInputs = require("../middlewares/validateInputs");
 const validatorMiddleware = require("../middlewares/validatorMiddleware");
 const validator = require("../utils/validator");
+const upload = require("../middlewares/upload");
 
 router
   .route("/")
   .get(auth.isauth, blogController.getAllBlogs)
   .post(
+    upload.none(),
     auth.verifyToken,
     auth.allowedTo(roles.ceo, roles.cto),
     blogController.createBlog
@@ -18,21 +20,12 @@ router
 router
   .route("/:slug/like")
   .post(auth.isauth, blogController.addLike)
-  .delete(auth.isauth, blogController.deleteLike);
 
-router
-  .route("/:slug/publish")
-  .patch(
-    auth.verifyToken,
-    validator.blogValidation,
-    validateInputs,
-    blogController.modifyBlog,
-    blogController.publishBlog
-  );
 router
   .route("/:slug")
   .get(auth.isauth, blogController.getSingleBlog)
   .patch(
+    upload.none(),
     auth.verifyToken,
     validator.blogValidation,
     validateInputs,

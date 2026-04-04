@@ -38,7 +38,7 @@ const projectValidtor = () => [
     .withMessage("Status is required")
     .isIn(["pending", "in progress", "review", "completed"])
     .withMessage(
-      "Status must be one of: pending, in progress, review, completed"
+      "Status must be one of: pending, in progress, review, completed",
     ),
 
   body("pic").optional().isURL().withMessage("Image must be a valid URL"),
@@ -131,7 +131,7 @@ const taskValidtor = () => [
     .optional()
     .isIn(["completed", "InProgress", "pending", "review"])
     .withMessage(
-      "Status must be one of: completed, InProgress, pending, review"
+      "Status must be one of: completed, InProgress, pending, review",
     ),
   body("references")
     .notEmpty()
@@ -163,7 +163,7 @@ const registerValidator = () => [
     .withMessage("Username must be at least 5 characters")
     .matches(/^[a-zA-Z0-9_]+$/)
     .withMessage(
-      "Username must contain only letters, numbers, and underscores"
+      "Username must contain only letters, numbers, and underscores",
     ),
   body("password")
     .notEmpty()
@@ -192,6 +192,7 @@ const registerValidator = () => [
       "Frontend",
       "Backend",
       "CEO",
+      "Flutter"
     ])
     .withMessage("Invalid role")
     .matches(/^[a-zA-Z0-9_]+$/)
@@ -223,37 +224,88 @@ const sanitizeContent = (value) =>
     disallowedTagsMode: "discard",
   });
 
-const blogValidation = [
-  body("title")
-    .isString()
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage("Title is required"),
 
-  body("subtitle").optional().isString().trim().escape(),
-
-  body("category")
-    .isString()
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage("Category is required"),
-
-  body("writer_pic")
-    .optional()
-    .isURL()
-    .withMessage("Writer pic must be a valid URL"),
-
-  body("status")
-    .optional()
-    .isIn(["draft", "published"])
-    .withMessage("Status must be 'draft' or 'published'"),
-
-  body("content").optional().isString().customSanitizer(sanitizeContent),
-
-  body("publish_date").optional().isISO8601().toDate(),
-];
+  const blogValidation = [
+    // TITLE
+    body("title")
+      .isString()
+      .trim()
+      .isLength({ min: 3, max: 100 })
+      .withMessage("Title must be 3–100 characters"),
+  
+    // SUBTITLE
+    body("subtitle")
+      .optional()
+      .isString()
+      .trim()
+      .isLength({ min: 3, max: 150 })
+      .withMessage("Subtitle must be 3–150 characters"),
+  
+    // CATEGORY
+    body("category")
+      .isString()
+      .trim()
+      .isLength({ min: 2, max: 50 })
+      .withMessage("Category must be 2–50 characters"),
+  
+    // SLUG
+    body("slug")
+      .optional()
+      .isSlug()
+      .withMessage("Slug must be URL-friendly (no spaces)"),
+  
+    // TAGS
+    body("tags")
+      .optional()
+      .isArray()
+      .withMessage("Tags must be an array"),
+  
+    body("tags.*")
+      .optional()
+      .isString()
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Each tag must be a non-empty string"),
+  
+    // BODY
+    body("body")
+      .isString()
+      .trim()
+      .isLength({ min: 10 })
+      .withMessage("Body must be at least 10 characters")
+      .customSanitizer(sanitizeContent),
+  
+    // WRITER PIC
+    body("writer_pic")
+      .optional()
+      .isURL()
+      .withMessage("Writer pic must be a valid URL"),
+  
+    // STATUS
+    body("status")
+      .optional()
+      .isIn(["draft", "published"])
+      .withMessage("Status must be 'draft' or 'published'"),
+  
+    // VIEWS
+    body("views")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("Views must be a positive number"),
+  
+    // LIKES
+    body("likes")
+      .optional()
+      .isArray()
+      .withMessage("Likes must be an array"),
+  
+    // DATE
+    body("publish_date")
+      .optional()
+      .isISO8601()
+      .toDate()
+      .withMessage("Invalid date format"),
+  ];
 
 module.exports = {
   projectValidtor,

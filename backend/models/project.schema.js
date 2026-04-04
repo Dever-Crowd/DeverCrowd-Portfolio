@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const projectSchema = mongoose.Schema({
   title: {
     type: String,
@@ -34,7 +35,7 @@ const projectSchema = mongoose.Schema({
   timeSpend: {
     type: String,
     required: true,
-    default: 0,
+    default: "0",
   },
   category: {
     type: String,
@@ -66,5 +67,6 @@ const projectSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-});
+}, { timestamps: true }); // إضافة timestamps لمتابعة الإنشاء والتعديل
+
 module.exports = mongoose.model("Project", projectSchema, "projects");
