@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -10,10 +14,18 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
-    "paths": { "@/*": ["./*"] },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
     "module": "esnext"
   },
   "include": [
@@ -21,7 +33,16 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-, "app/admin/projects/add/page.jsx", "app/admin/projects/[id]/page.jsx", "app/blogs/[slug]/page.jsx", "app/admin/blogs/[slug]/page.jsx", "data/static/services.js", "app/services/page.tsx", "data/static/contact.js"  ],
-  "exclude": ["node_modules"]
+    ".next/dev/types/**/*.ts",
+    "app/admin/projects/add/page.jsx",
+    "app/admin/projects/[id]/page.jsx",
+    "app/blogs/[slug]/page.jsx",
+    "app/admin/blogs/[slug]/page.jsx",
+    "data/static/services.js",
+    "app/services/page.tsx",
+    "data/static/contact.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
