@@ -71,7 +71,7 @@ export default function RichTextEditor({
         content: value,
         editorProps: {
             attributes: {
-                class: "outline-none min-h-[200px] prose prose-invert max-w-none text-sm",
+                class: "outline-none min-h-[200px] max-w-none text-sm tiptap min-h-[200px] text-sm",
             },
         },
         onUpdate: ({ editor }) => {

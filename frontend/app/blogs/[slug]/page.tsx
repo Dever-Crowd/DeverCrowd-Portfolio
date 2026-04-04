@@ -7,6 +7,7 @@ import { get, post } from "@/data/api";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useLenis } from "@/hooks/useLenis";
+import BlogContent from "@/components/ui/Blogcontent";
 
 interface Blog {
   _id: string;
@@ -225,20 +226,7 @@ export default function BlogPage() {
         </motion.div>
 
         {/* Body */}
-        <motion.article
-          ref={articleRef}
-          className="prose prose-neutral dark:prose-invert max-w-none text-base leading-relaxed
-            prose-headings:font-black prose-headings:tracking-tight
-            prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-            prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-            prose-blockquote:border-primary prose-blockquote:text-muted-foreground
-            prose-img:rounded-2xl prose-img:shadow-lg"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          dangerouslySetInnerHTML={{ __html: blog.body ?? "" }}
-        />
+        <BlogContent html={blog.body||""} />
 
         {/* Footer actions */}
         <motion.div
