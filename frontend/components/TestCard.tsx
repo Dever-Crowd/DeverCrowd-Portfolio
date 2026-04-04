@@ -6,27 +6,40 @@ interface TestCardProps {
 
 const TestCard = ({ name, image, test }: TestCardProps) => {
   return (
-    <div className="flex flex-col items-center justify-between text-center bg-card rounded-3xl p-6 max-w-sm sm:max-w-md lg:max-w-lg mx-auto w-full border border-primary/20">
-      <div className="flex items-center gap-2 mb-4 sm:mb-5 w-full justify-center">
-        <div className="flex items-center gap-x-6">
-          <img
-            className="object-cover size-8 rounded-full ring ring-gray-300 dark:ring-gray-600"
-            src={image}
-            alt={name}
-          />
+    <div className="group relative flex flex-col gap-5 rounded-2xl border border-white/8 bg-card p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+      
+      {/* Quote mark */}
+      <span className="text-5xl font-bold leading-none text-primary/20 select-none">
+        "
+      </span>
+
+      {/* Review text */}
+      <p className="flex-1 text-sm leading-relaxed text-muted-foreground -mt-3">
+        {test}
+      </p>
+
+      {/* Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
+      {/* Author */}
+      <div className="flex items-center gap-3">
+        <img
+          src={image}
+          alt={name}
+          className="size-8 rounded-full object-cover ring-2 ring-primary/20"
+        />
+        <div className="flex flex-col gap-0.5">
+          <p className="text-sm font-semibold text-foreground capitalize">{name}</p>
+          {/* Stars */}
+          <div className="flex items-center gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <svg key={i} className="size-3 fill-amber-400 text-amber-400" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            ))}
+          </div>
         </div>
-        <p className="text-card-foreground text-base font-medium tracking-wide capitalize transition-colors duration-300 group-hover:text-blue-400">
-          {name}
-        </p>
       </div>
-
-      <div className="relative text-card-foreground text-sm leading-relaxed bg-muted border border-white/10 p-4 rounded-2xl w-full">
-        <span className="absolute -top-2 -left-2 text-primary text-4xl font-bold opacity-20">"</span>
-        <p>{test}</p>
-        <span className="absolute -bottom-2 -right-2 text-primary text-4xl font-bold opacity-20">"</span>
-      </div>
-
-      <div className="mt-6 h-1 w-1/3 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full" />
     </div>
   );
 };
