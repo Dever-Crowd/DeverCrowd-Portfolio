@@ -20,7 +20,7 @@ const sections: Section[] = [
   { id: "about", label: "About", icon: RiQuestionMark },
   { id: "our-stack", label: "Our Stack", icon: RiStackLine },
   { id: "our-team", label: "Our Team", icon: RiTeamFill },
-  { id: "testomonials", label: "Testimonials", icon: RiStarLine },
+  { id: "testimonials", label: "Testimonials", icon: RiStarLine },
 ];
 
 const FloatingNav = () => {
