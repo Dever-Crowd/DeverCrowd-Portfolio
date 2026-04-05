@@ -59,7 +59,22 @@ export default function WorksPage() {
             </div>
           </div>
         </div>
+{/* Loading */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-24 text-muted-foreground">
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          Loading projects…
+        </div>
+      )}
 
+      {/* Error */}
+      {isError && (
+        <div className="flex items-center justify-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          Failed to load projects. Please try again later.
+        </div>
+      )}
+        
         {/* Grid */}
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
           {filtered.length === 0 ? (
