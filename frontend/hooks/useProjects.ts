@@ -75,6 +75,7 @@ export const useProjects = () =>
             if (!res.ok) throw new Error(res.message || "Failed to load projects");
             return (res.data?.projects ?? []).map(normalizeProject);
         },
+        staleTime: 1000 * 60 * 5,
     });
 
 export const useDeleteProject = () => {
