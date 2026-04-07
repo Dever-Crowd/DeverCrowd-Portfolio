@@ -58,8 +58,6 @@ router
 router
   .route("/profiles")
   .get(
-    auth.verifyToken,
-    auth.allowedTo(roles.ceo, roles.cto),
     profileController.getAllProfiles 
   );
 
