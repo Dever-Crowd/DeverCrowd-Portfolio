@@ -14,7 +14,6 @@ import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminLoader } from "@/components/admin/AdminLoader";
 import { Loader2 } from "lucide-react";
-
 const statusOptions = [
   { value: "pending", label: "Pending" },
   { value: "in progress", label: "In Progress" },
@@ -24,6 +23,58 @@ const statusOptions = [
 
 const selectStyles = getAdminSelectStyles();
 
+function FormField({ label, children, error }) {
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      {children}
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </div>
+  );
+}
+// Tags input component
+function TagsInput({ value, onChange, placeholder }) {
+  const [inputValue, setInputValue] = useState("");
+
+  const addTag = () => {
+    const trimmed = inputValue.trim();
+    if (trimmed && !value.includes(trimmed)) {
+      onChange([...value, trimmed]);
+      setInputValue("");
+    }
+  };
+
+  const removeTag = (tag) => {
+    onChange(value.filter((t) => t !== tag));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-1 mb-1">
+        {value.map((tag) => (
+          <div key={tag} className="bg-gray-200 text-gray-800 px-2 py-1 rounded flex items-center gap-1">
+            {tag}
+            <X className="w-3 h-3 cursor-pointer" onClick={() => removeTag(tag)} />
+          </div>
+        ))}
+      </div>
+      <Input
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        onBlur={addTag}
+      />
+    </div>
+  );
+}
 export default function AdminEditProjectPage() {
   const params = useParams();
   const router = useRouter();
@@ -75,7 +126,7 @@ export default function AdminEditProjectPage() {
           timeToFinish: proj.timeToFinish || "",
           client: proj.client || "",
           status: proj.status || "pending",
-          cost: String(proj.cost || ""),
+          cost: proj.cost || 0,
           timeSpend: proj.timeSpend || "",
           category: proj.category || "",
           scope: proj.scope || [],
@@ -170,63 +221,82 @@ export default function AdminEditProjectPage() {
       <AdminPageHeader title="Edit project" description="Update project details" />
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* BASICS */}
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader>
             <CardTitle>Basics</CardTitle>
             <CardDescription>Title, client, and categorization</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <Input name="title" value={form.title} onChange={handleChange} placeholder="Title" />
-            <Input name="client" value={form.client} onChange={handleChange} placeholder="Client" />
-            <Input name="category" value={form.category} onChange={handleChange} placeholder="Category" />
-            <Input name="timeToFinish" value={form.timeToFinish} onChange={handleChange} placeholder="Time to finish" />
-            <Input name="cost" value={form.cost} onChange={handleChange} type="number" />
-            <Input name="timeSpend" value={form.timeSpend} onChange={handleChange} placeholder="Time spent" />
-            
-            <Select
-              instanceId="edit-project-status"
-              styles={selectStyles}
-              options={statusOptions}
-              value={statusOptions.find((o) => o.value === form.status) ?? null}
-              onChange={(opt) => setForm((prev) => ({ ...prev, status: opt?.value ?? "pending" }))}
-            />
+            <FormField label="Title" error={errors.title}>
+              <Input id="title" name="title" value={form.title} onChange={handleChange} />
+            </FormField>
+            <FormField label="Client" error={errors.client}>
+              <Input id="client" name="client" value={form.client} onChange={handleChange} />
+            </FormField>
+            <FormField label="Category" error={errors.category}>
+              <Input id="category" name="category" value={form.category} onChange={handleChange} />
+            </FormField>
+            <FormField label="Time to finish" error={errors.timeToFinish}>
+              <Input id="timeToFinish" name="timeToFinish" value={form.timeToFinish} onChange={handleChange} />
+            </FormField>
+            <FormField label="Cost" error={errors.cost}>
+              <Input id="cost" name="cost" type="number" value={form.cost} onChange={handleChange} min={0} step="0.01" />
+            </FormField>
+            <FormField label="Time spent" error={errors.timeSpend}>
+              <Input id="timeSpend" name="timeSpend" value={form.timeSpend} onChange={handleChange} />
+            </FormField>
+            <FormField label="Status" error={errors.status}>
+              <Select
+                instanceId="project-status"
+                styles={selectStyles}
+                menuPortalTarget={typeof document !== "undefined" ? document.body : null}
+                menuPosition="fixed"
+                options={statusOptions}
+                value={statusOptions.find((o) => o.value === form.status)}
+                onChange={(opt) => setForm((prev) => ({ ...prev, status: opt.value }))}
+              />
+            </FormField>
           </CardContent>
         </Card>
 
         {/* TAGS */}
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle>Tags & Links</CardTitle>
+            <CardTitle>Tags & links</CardTitle>
+            <CardDescription>Tags and URLs</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {["scope", "stack", "industry"].map((name) => (
-              <Input
-                key={name}
-                value={form[name].join(", ")}
-                onChange={(e) => handleArrayChange(name, e.target.value)}
-                placeholder={name}
-              />
-            ))}
-            <Input name="live" value={form.live} onChange={handleChange} placeholder="Live URL" />
-            <Input name="github" value={form.github} onChange={handleChange} placeholder="GitHub URL" />
+            <FormField label="Scope" error={errors.scope}>
+              <TagsInput value={form.scope} onChange={(arr) => setForm((prev) => ({ ...prev, scope: arr }))} placeholder="Design, Development" />
+            </FormField>
+            <FormField label="Stack" error={errors.stack}>
+              <TagsInput value={form.stack} onChange={(arr) => setForm((prev) => ({ ...prev, stack: arr }))} placeholder="Next.js, Node" />
+            </FormField>
+            <FormField label="Industry" error={errors.industry}>
+              <TagsInput value={form.industry} onChange={(arr) => setForm((prev) => ({ ...prev, industry: arr }))} placeholder="SaaS, Retail" />
+            </FormField>
+            <FormField label="Live URL">
+              <Input id="live" name="live" type="url" value={form.live} onChange={handleChange} placeholder="https://" />
+            </FormField>
+            <FormField label="GitHub URL">
+              <Input id="github" name="github" type="url" value={form.github} onChange={handleChange} placeholder="https://" />
+            </FormField>
           </CardContent>
         </Card>
 
         {/* CONTENT */}
-        <Card>
+        <Card className="border-border shadow-sm">
           <CardHeader>
-            <CardTitle>Content & Media</CardTitle>
+            <CardTitle>Content & media</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Textarea name="description" value={form.description} onChange={handleChange} rows={8} />
-            <div>
-              {form.picPreview ? (
-                <img src={form.picPreview} className="h-40 rounded mb-3" />
-              ) : (
-                project?.pic && <Image src={project.pic} alt="" width={200} height={150} />
-              )}
-              <Input type="file" name="pic" onChange={handleChange} />
-            </div>
+            <FormField label="Description" error={errors.description}>
+              <Textarea id="description" name="description" rows={8} value={form.description} onChange={handleChange} className="min-h-[200px] resize-y" />
+            </FormField>
+            <FormField label="Cover image" error={errors.pic}>
+              <Input id="pic" name="pic" type="file" accept="image/*" onChange={handleChange} />
+              {form.picPreview && <img src={form.picPreview} alt="Preview" className="mt-2 max-h-40 object-cover rounded" />}
+            </FormField>
           </CardContent>
         </Card>
 
@@ -237,6 +307,7 @@ export default function AdminEditProjectPage() {
             {submitting ? <Loader2 className="animate-spin" /> : "Save changes"}
           </Button>
         </div>
+        
       </form>
     </div>
   );
