@@ -173,7 +173,7 @@ export default function AdminEditProjectPage() {
     if (!form.timeToFinish) errs.timeToFinish = "Required";
     if (!form.client) errs.client = "Required";
     if (!form.category) errs.category = "Required";
-    if (!form.cost || isNaN(Number(form.cost))) errs.cost = "Invalid cost";
+    if (!form.cost) errs.cost = "Invalid cost";
     if (!form.timeSpend) errs.timeSpend = "Required";
     if (!form.scope.length) errs.scope = "Required";
     if (!form.stack.length) errs.stack = "Required";
