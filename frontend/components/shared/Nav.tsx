@@ -210,7 +210,7 @@ const Nav = () => {
             }}
           >
             {/* اللمبة داخل المنيو — في أقصى اليمين من أعلى المنيو */}
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ display: "flex", justifyContent: "flex-srart" }}>
               <div className="bulb-hang-wrap">
                 <div className="bulb-wire" />
                 <ThemeToggle />
@@ -218,7 +218,7 @@ const Nav = () => {
             </div> 
 
             {/* Nav links */}
-            <div className="flex flex-col gap-1 py-2 pt-10">
+            <div className="flex flex-col gap-1 py-2">
               {navKeys.map(({ href, translationKey }, i) => (
                 <Link
                   key={href}
