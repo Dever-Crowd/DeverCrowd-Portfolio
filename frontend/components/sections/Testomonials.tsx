@@ -73,6 +73,8 @@ interface MarqueeRowProps {
 
 const MarqueeRow = ({ items, direction, speed = 40 }: MarqueeRowProps) => {
   const trackRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale(); // أضف ده
+  const isRTL = locale === 'ar';
 
   const handleMouseEnter = () => {
     if (trackRef.current) trackRef.current.style.animationPlayState = "paused";
@@ -82,6 +84,9 @@ const MarqueeRow = ({ items, direction, speed = 40 }: MarqueeRowProps) => {
   };
 
   const repeated = repeat(items, 4);
+  const animationName = isRTL
+    ? `marquee-${direction}-rtl`
+    : `marquee-${direction}`;
 
   return (
     <div
@@ -94,7 +99,7 @@ const MarqueeRow = ({ items, direction, speed = 40 }: MarqueeRowProps) => {
         className="marquee-track flex gap-4"
         style={{
           width: "max-content",
-          animation: `marquee-${direction} ${speed}s linear infinite`,
+          animation: `${animationName} ${speed}s linear infinite`,
         }}
       >
         {repeated.map((item, i) => (
@@ -114,19 +119,6 @@ const Testimonials = () => {
       id="testimonials"
       className="relative flex w-full flex-col items-center justify-center py-16 overflow-hidden gap-4"
     >
-      <style>{`
-  @keyframes marquee-left {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-  @keyframes marquee-right {
-    0%   { transform: translateX(-50%); }
-    100% { transform: translateX(0); }
-  }
-  .marquee-track {
-    direction: ltr !important;
-  }
-`}</style>
 
       {/* blur decoration */}
       <div className="absolute top-1 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] h-96 rounded-full bg-white/5 blur-3xl opacity-90 pointer-events-none z-0" />

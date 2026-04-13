@@ -48,7 +48,7 @@ const OurStack = () => {
                                                 {admin.email}
                                             </span>
                                         </div>
-                                        <span className="shrink-0 rounded-full border border-primary bg-primary/40 px-2.5 py-1 text-[10px] font-semibold text- uppercase tracking-wide">
+                                        <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-[10px] font-semibold text- uppercase tracking-wide">
                                             {admin.role}
                                         </span>
                                     </div>

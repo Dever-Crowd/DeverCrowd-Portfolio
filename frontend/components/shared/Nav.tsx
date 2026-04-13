@@ -63,43 +63,6 @@ const Nav = () => {
 
   return (
     <>
-      <style>{`
-        @keyframes menuSlideDown {
-          from { opacity:0; transform:translateY(-24px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes menuSlideUp {
-          from { opacity:1; transform:translateY(0); }
-          to   { opacity:0; transform:translateY(-24px); }
-        }
-        @keyframes linkFadeIn {
-          from { opacity:0; transform:translateX(-10px); }
-          to   { opacity:1; transform:translateX(0); }
-        }
-        @keyframes swingBulb {
-          0%,100% { transform:rotate(-4deg); }
-          50%     { transform:rotate(4deg); }
-        }
-        .menu-enter   { animation:menuSlideDown 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
-        .menu-exit    { animation:menuSlideUp   0.28s cubic-bezier(0.4,0,1,1)    forwards; }
-        .link-fade-in { opacity:0; animation:linkFadeIn 0.3s ease forwards; }
-
-        .bulb-hang-wrap {
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-          transform-origin:top center;
-          animation:swingBulb 5s ease-in-out infinite;
-        }
-        .bulb-wire {
-          width:1px;
-          height:20px;
-          background:linear-gradient(to bottom,rgba(148,163,184,0.6),rgba(148,163,184,0.15));
-        }
-        .bulb-hang-wrap .bulb-toggle svg {
-          transform: rotate(180deg);
-        }
-      `}</style>
 
       <nav
         aria-label="Main navigation"
@@ -122,7 +85,7 @@ const Nav = () => {
             {/* اللمبة الخارجية — تحت اللوجو على الموبايل والديسكتوب */}
           {(menuOpen === false) && (
         
-             
+            
             <div
               style={{
                 position: "absolute",

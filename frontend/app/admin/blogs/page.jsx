@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Search } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 
 import {
   Dialog,

@@ -94,7 +94,7 @@ const FloatingNav = () => {
 
       {/* Mobile */}
       <div
-        className="flex md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex-row gap-1.5 p-2.5 rounded-2xl border border-white/10 backdrop-blur-md"
+        className="flex md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex-row gap-1.5 p-2.5 rounded-2xl border border-primary/30 backdrop-blur-md"
         style={{
           background: "color-mix(in srgb, var(--card) 80%, transparent)",
         }}
@@ -117,7 +117,7 @@ const FloatingNav = () => {
                 width: 18,
                 height: 18,
                 color:
-                  active === id ? "var(--primary)" : "rgba(255,255,255,0.35)",
+                  active === id ? "var(--primary)" : "var(--muted-foreground)",
                 transition: "color 0.2s",
               }}
             />

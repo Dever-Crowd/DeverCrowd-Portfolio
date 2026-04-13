@@ -58,7 +58,7 @@ const Hero = () => {
         <LightRaysCSS
           eager
           raysOrigin="top-center"
-          raysColor="#0f111a"
+          raysColor=""
           raysSpeed={9}
           lightSpread={0.2}
           rayLength={1.65}
@@ -119,7 +119,7 @@ const Hero = () => {
             href="/contact"
             className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
             style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "0 0 20px color-mix(in srgb, var(--primary) 35%, transparent)" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--secondary)"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "var(--primary)"; }}
           >
             <FaEnvelope />

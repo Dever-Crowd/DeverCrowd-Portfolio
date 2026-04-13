@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = 'force-dynamic';
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
 
 import { useState } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";

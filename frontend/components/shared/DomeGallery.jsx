@@ -270,6 +270,22 @@ export default function DomeGallery({
     resolvedOverlayBlurColor, grayscale, imageBorderRadius,
     openedImageBorderRadius, openedImageWidth, openedImageHeight
   ]);
+  useEffect(() => {
+    let animId;
+    const speed = 0.1; // سرعة اللف - غيرها زي ما تحب
+  
+    const autoRotate = () => {
+      if (!draggingRef.current && !focusedElRef.current) {
+        const nextY = wrapAngleSigned(rotationRef.current.y + speed);
+        rotationRef.current = { ...rotationRef.current, y: nextY };
+        applyTransform(rotationRef.current.x, nextY);
+      }
+      animId = requestAnimationFrame(autoRotate);
+    };
+  
+    animId = requestAnimationFrame(autoRotate);
+    return () => cancelAnimationFrame(animId);
+  }, []);
 
   useEffect(() => {
     applyTransform(rotationRef.current.x, rotationRef.current.y);

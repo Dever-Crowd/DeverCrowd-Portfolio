@@ -32,33 +32,6 @@ export default function ThemeToggle() {
 
   return (
     <>
-      <style>{`
-        .bulb-toggle { position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; user-select: none; }
-        .bulb-svg { transition: filter 0.4s ease; }
-        .bulb-toggle.on .bulb-svg { filter: drop-shadow(0 0 10px #fbbf24) drop-shadow(0 0 24px #f59e0b); }
-        .bulb-toggle.on .bulb-glass { fill: #fef3c7; }
-        .bulb-toggle.off .bulb-glass { fill: #374151; }
-        .bulb-toggle.on .bulb-filament { stroke: #f59e0b; }
-        .bulb-toggle.off .bulb-filament { stroke: #4b5563; }
-        .bulb-toggle.on .bulb-shine { opacity: 0.6; }
-        .bulb-toggle.off .bulb-shine { opacity: 0; }
-        .bulb-toggle.on .bulb-glow { opacity: 1; }
-        .bulb-toggle.off .bulb-glow { opacity: 0; }
-        .bulb-toggle.on .bulb-rays { opacity: 1; }
-        .bulb-toggle.off .bulb-rays { opacity: 0; }
-        .bulb-glass { transition: fill 0.4s ease; }
-        .bulb-filament { transition: stroke 0.3s; }
-        .bulb-shine, .bulb-glow, .bulb-rays { transition: opacity 0.4s; }
-        .wire-live { stroke-dasharray: 80; stroke-dashoffset: 80; transition: stroke-dashoffset 0.5s ease; }
-        .bulb-toggle.on .wire-live { stroke-dashoffset: 0; stroke: #fbbf24; }
-        .bulb-knob { transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-        .bulb-toggle.on .bulb-knob { transform: translateX(22px); }
-        .spark { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fbbf24; opacity: 0; }
-        @keyframes sparkfly {
-          0%   { opacity: 1; transform: translate(0,0) scale(1); }
-          100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
-        }
-      `}</style>
 
       <button
         type="button"

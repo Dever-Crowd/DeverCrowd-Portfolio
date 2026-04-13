@@ -27,72 +27,84 @@ export default function DashboardLayout({ children }) {
 
   if (isLogin) {
     return (
-      <>
-        <Toaster richColors position="top-right" closeButton />
-        {children}
-      </>
+      <html lang="en">
+        <body>
+          <Toaster richColors position="top-right" closeButton />
+          {children}
+        </body>
+      </html>
     );
   }
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return (
+      <html lang="en">
+        <body />
+      </html>
+    );
+  }
 
   return (
-    <AdminAuthGate>
-      <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen bg-muted/20">
-          <Toaster richColors position="top-right" closeButton />
+    <html lang="en">
+      <body className="font-sans text-foreground antialiased min-h-screen">
+        <AdminAuthGate>
+          <QueryClientProvider client={queryClient}>
+            <div className="min-h-screen bg-muted/20">
+              <Toaster richColors position="top-right" closeButton />
 
-          <header className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-card/90 px-4 backdrop-blur-md lg:hidden">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="shrink-0"
-              aria-label="Open navigation menu"
-              aria-expanded={mobileOpen}
-              onClick={() => setMobileOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            <span className="truncate text-sm font-semibold text-foreground">Admin</span>
-          </header>
+              <header className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-card/90 px-4 backdrop-blur-md lg:hidden">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0"
+                  aria-label="Open navigation menu"
+                  aria-expanded={mobileOpen}
+                  onClick={() => setMobileOpen(true)}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+                <span className="truncate text-sm font-semibold text-foreground">Admin</span>
+              </header>
 
-          <aside
-            className={cn(
-              "fixed inset-y-0 left-0 z-50 w-[min(100vw-3rem,18rem)] border-r border-border bg-card shadow-xl transition-transform duration-200 ease-out lg:hidden",
-              mobileOpen ? "translate-x-0" : "-translate-x-full"
-            )}
-          >
-            <div className="flex h-14 items-center justify-end border-b border-border px-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Close navigation menu"
-                onClick={() => setMobileOpen(false)}
+              <aside
+                className={cn(
+                  "fixed inset-y-0 left-0 z-50 w-[min(100vw-3rem,18rem)] border-r border-border bg-card shadow-xl transition-transform duration-200 ease-out lg:hidden",
+                  mobileOpen ? "translate-x-0" : "-translate-x-full"
+                )}
               >
-                <X className="h-5 w-5" />
-              </Button>
+                <div className="flex h-14 items-center justify-end border-b border-border px-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Close navigation menu"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <AdminSidebarNav className="h-[calc(100%-3.5rem)]" onNavigate={() => setMobileOpen(false)} />
+              </aside>
+
+              {mobileOpen ? (
+                <button
+                  type="button"
+                  className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[1px] lg:hidden"
+                  aria-label="Close menu"
+                  onClick={() => setMobileOpen(false)}
+                />
+              ) : null}
+
+              <aside className="fixed inset-y-0 left-0 z-30 hidden h-full w-64 flex-col border-r border-border bg-card lg:flex">
+                <AdminSidebarNav className="min-h-0 flex-1 overflow-hidden" />
+              </aside>
+
+              <main className="min-h-screen pt-14 lg:ml-64 lg:pt-0">{children}</main>
             </div>
-            <AdminSidebarNav className="h-[calc(100%-3.5rem)]" onNavigate={() => setMobileOpen(false)} />
-          </aside>
-
-          {mobileOpen ? (
-            <button
-              type="button"
-              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[1px] lg:hidden"
-              aria-label="Close menu"
-              onClick={() => setMobileOpen(false)}
-            />
-          ) : null}
-
-          <aside className="fixed inset-y-0 left-0 z-30 hidden h-full w-64 flex-col border-r border-border bg-card lg:flex">
-            <AdminSidebarNav className="min-h-0 flex-1 overflow-hidden" />
-          </aside>
-
-          <main className="min-h-screen pt-14 lg:ml-64 lg:pt-0">{children}</main>
-        </div>
-      </QueryClientProvider>
-    </AdminAuthGate>
+          </QueryClientProvider>
+        </AdminAuthGate>
+      </body>
+    </html>
   );
 }
