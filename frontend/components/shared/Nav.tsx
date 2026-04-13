@@ -131,7 +131,7 @@ const Nav = () => {
                 alignItems: "center",
               }}
             >
-              <div className="bulb-hang-wrap">
+              <div className="bulb-hang-wrap z-50">
                 <div className="bulb-wire" />
                 <ThemeToggle />
               </div>
