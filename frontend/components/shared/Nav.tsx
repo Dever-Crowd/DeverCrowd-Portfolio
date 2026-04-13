@@ -120,6 +120,9 @@ const Nav = () => {
             </Link>
 
             {/* اللمبة الخارجية — تحت اللوجو على الموبايل والديسكتوب */}
+          {(!menuOpen || !isClosing) && (
+        
+             
             <div
               style={{
                 position: "absolute",
@@ -137,6 +140,7 @@ const Nav = () => {
               </div>
             </div>
           </div>
+        ) }
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1">
@@ -205,12 +209,12 @@ const Nav = () => {
             }}
           >
             {/* اللمبة داخل المنيو — في أقصى اليمين من أعلى المنيو */}
-            {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <div className="bulb-hang-wrap">
                 <div className="bulb-wire" />
                 <ThemeToggle />
               </div>
-            </div> */}
+            </div> 
 
             {/* Nav links */}
             <div className="flex flex-col gap-1 py-2 pt-10">
